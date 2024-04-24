@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "POSIndexer": {
+      "commandName": "Project"
+    },
+    "Docker": {
+      "commandName": "Docker"
+    }
+  }
+}
