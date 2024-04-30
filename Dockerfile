@@ -1,8 +1,11 @@
 #See https://aka.ms/customizecontainer to learn how to customize your debug container and how Visual Studio uses this Dockerfile to build your images for faster debugging.
 
-FROM mcr.microsoft.com/dotnet/runtime:8.0 AS base
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
 USER app
 WORKDIR /app
+EXPOSE 8123
+EXPOSE 8234
+
 
 #variables for db and messagequeue
 ENV DB_CONNECTION_STRING "server=host.docker.internal;port=3307;uid=root;pwd=12345;database=carstorage"

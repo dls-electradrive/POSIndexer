@@ -6,7 +6,7 @@ namespace POSIndexer.Migrations
 {
     public class InventoryReadDB : DbContext
     {
-        private readonly string _connectionString = Environment.GetEnvironmentVariable("DB_CONNECTION_STRING") ?? "server=host.docker.internal;port=3307;uid=root;pwd=12345;database=carstorage";
+        private readonly string _connectionString = Environment.GetEnvironmentVariable("DB_CONNECTION_STRING");
         public InventoryReadDB() { }
         public InventoryReadDB(DbContextOptions options) : base(options) { }
 

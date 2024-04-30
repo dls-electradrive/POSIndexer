@@ -3,6 +3,8 @@ using Microsoft.EntityFrameworkCore;
 using POSIndexer;
 using POSIndexer.Migrations;
 using System;
+var builder = WebApplication.CreateBuilder(args);
+var app = builder.Build();
 
 var context = new InventoryReadDB();
 if (context.Database.GetPendingMigrations().Any())
@@ -19,7 +21,4 @@ var messageHandler = new MQHandler();
 messageHandler.AttachCreateEvent();
 messageHandler.AttachRemoveEvent();
 messageHandler.AttachOrderEvent();
-
-Console.WriteLine(" Press [enter] to exit.");
-Console.ReadLine();
-Console.WriteLine("Exitting...");
+app.Run();
