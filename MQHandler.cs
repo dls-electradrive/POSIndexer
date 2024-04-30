@@ -27,15 +27,17 @@ namespace POSIndexer
         public void AttachCreateEvent()
         {
             var repo = new POSRepository();
-            AttachQueueEvent("addcarqueue-indexer", "removeExchange-indexer", _repository.AddCar);
+            AttachQueueEvent("addcarqueue-indexer", "removeExchange-indexer", repo.AddCar);
         }
         public void AttachOrderEvent()
         {
-            AttachQueueEvent("updatecarqueue-indexer", "removeExchange-indexer", _repository.UpdateCar);
+            var repo = new POSRepository();
+            AttachQueueEvent("updatecarqueue-indexer", "removeExchange-indexer", repo.UpdateCar);
         }
         public void AttachRemoveEvent()
         {
-            AttachQueueEvent("invalidatecarqueue-indexer", "removeExchange-indexer", _repository.InvalidateCar);
+            var repo = new POSRepository();
+            AttachQueueEvent("invalidatecarqueue-indexer", "removeExchange-indexer", repo.InvalidateCar);
         }
         private void AttachQueueEvent(string queueName, string exchangeName, Action<Car> function)
         {
@@ -48,7 +50,6 @@ namespace POSIndexer
             var consumer = new EventingBasicConsumer(channel);
             consumer.Received += (model, ea) =>
             {
-                _repository = new POSRepository();
                 var body = ea.Body.ToArray();
                 var message = Encoding.UTF8.GetString(body);
                 var dto = JsonConvert.DeserializeObject<Car>(message);
