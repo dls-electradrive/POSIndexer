@@ -1,12 +1,30 @@
 ﻿using POSIndexer.Migrations;
+using POSIndexer.Models;
 
 namespace POSIndexer
 {
     public class POSRepository
     {
-        private readonly string _connectionstring = Environment.GetEnvironmentVariable("DB_CONNECTION_STRING");
-        public void AddToDB(string writeobject, InventoryReadDB db)
+        private readonly InventoryReadDB _db;
+        public POSRepository()
         {
+            _db = new InventoryReadDB();
         }
+        public void AddCar(Car car)
+        {
+            _db.Cars.Add(car);
+            _db.SaveChanges();
+        }
+        public void UpdateCar(Car car)
+        {
+            _db.Cars.Update(car);
+            _db.SaveChanges();
+        }
+        public void InvalidateCar(Car car)
+        {
+            _db.Cars.Update(car);
+            _db.SaveChanges();
+        }
+
     }
 }

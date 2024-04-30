@@ -6,7 +6,7 @@ namespace POSIndexer.Migrations
 {
     public class InventoryReadDB : DbContext
     {
-        private readonly string _connectionString = Environment.GetEnvironmentVariable("DB_CONNECTION_STRING");
+        private readonly string _connectionString = Environment.GetEnvironmentVariable("DB_CONNECTION_STRING") ?? "server=host.docker.internal;port=3307;uid=root;pwd=12345;database=carstorage";
         public InventoryReadDB() { }
         public InventoryReadDB(DbContextOptions options) : base(options) { }
 
@@ -15,8 +15,7 @@ namespace POSIndexer.Migrations
             optionsBuilder.UseMySQL(_connectionString);
         }
 
-        public DbSet<StandardCar> StandardCars { get; set; }
-        public DbSet<CustomCar> CustomCars { get; set; }
+        public DbSet<Car> Cars { get; set; }
 
     }
 
