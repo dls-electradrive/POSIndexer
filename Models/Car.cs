@@ -4,7 +4,7 @@ namespace POSIndexer.Models
 {
     public class Car
     {
-        public Guid Id { get; set; }
+        public Guid CarId { get; set; }
         [MaxLength(100)]
         public string Name { get; set; }
         [MaxLength(100)]
@@ -13,6 +13,6 @@ namespace POSIndexer.Models
         public string Color { get; set; }
         public DateTime? CreatedDate { get; set; }
         public DateTime? SoldDate { get; set; }
-        public List<Part> Parts { get; set; } = new();
+        public List<Part> Parts { get; set; }
     }
 }

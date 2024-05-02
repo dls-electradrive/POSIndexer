@@ -9,7 +9,7 @@ namespace POSIndexer.Models
 {
     public class Part
     {
-        public Guid Id { get; set; }
+        public Guid PartId { get; set; }
         [MaxLength(100)]
         public string Name { get; set; }
         [MaxLength(500)]

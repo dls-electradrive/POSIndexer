@@ -11,6 +11,7 @@ namespace POSIndexer.Migrations
 
 
         public DbSet<Car> Cars { get; set; }
+        public DbSet<Part> Parts { get; set; }
 
     }
 
