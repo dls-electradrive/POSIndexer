@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using POSIndexer.Migrations;
 
@@ -10,9 +11,11 @@ using POSIndexer.Migrations;
 namespace POSIndexer.Migrations
 {
     [DbContext(typeof(InventoryReadDB))]
-    partial class InventoryReadDBModelSnapshot : ModelSnapshot
+    [Migration("20240501124100_AddedDatesForCars")]
+    partial class AddedDatesForCars
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
