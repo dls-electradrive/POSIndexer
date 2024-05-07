@@ -20,11 +20,5 @@ namespace POSIndexer
             _db.Cars.Update(car);
             _db.SaveChanges();
         }
-        public void InvalidateCar(Car car)
-        {
-            _db.Cars.Update(car);
-            _db.SaveChanges();
-        }
-
     }
 }

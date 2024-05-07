@@ -73,7 +73,7 @@ app.UseSwagger();
 app.UseSwaggerUI();
 
 var messageHandler = new MQHandler(builder.Configuration);
-messageHandler.AttachCreateEvent();
-messageHandler.AttachRemoveEvent();
-messageHandler.AttachOrderEvent();
+messageHandler.AttachNewStandardCarEvent();
+messageHandler.AttachNewCarEvent();
+messageHandler.AttachNewCustomCarEvent();
 app.Run();

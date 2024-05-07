@@ -25,27 +25,27 @@ namespace POSIndexer
             _factory.Password = messageQueueConfig["Password"];
             _connection = _factory.CreateConnection();
         }
-        public void AttachCreateEvent()
+        public void AttachNewCustomCarEvent()
         {
             var repo = new POSRepository();
-            AttachQueueEvent("addcarqueue-indexer", "removeExchange-indexer", repo.AddCar);
+            AttachQueueEvent("newCustomCar-indexer-queue", "newCar-exchange", repo.AddCar, "custom");
         }
-        public void AttachOrderEvent()
+        public void AttachNewStandardCarEvent()
         {
             var repo = new POSRepository();
-            AttachQueueEvent("updatecarqueue-indexer", "removeExchange-indexer", repo.UpdateCar);
+            AttachQueueEvent("newStandardCar-indexer-queue", "newCar-exchange", repo.UpdateCar, "standard");
         }
-        public void AttachRemoveEvent()
+        public void AttachNewCarEvent()
         {
             var repo = new POSRepository();
-            AttachQueueEvent("invalidatecarqueue-indexer", "removeExchange-indexer", repo.InvalidateCar);
+            AttachQueueEvent("newStandardCar-indexer-queue", "newCar-exchange", repo.AddCar, "created");
         }
-        private void AttachQueueEvent(string queueName, string exchangeName, Action<Car> function)
+        private void AttachQueueEvent(string queueName, string exchangeName, Action<Car> function, string routingKey)
         {
             var channel = _connection.CreateModel();
             channel.ExchangeDeclare(exchangeName, ExchangeType.Fanout);
             channel.QueueDeclare(queueName);
-            channel.QueueBind(queueName, exchangeName, "");
+            channel.QueueBind(queueName, exchangeName, routingKey);
             channel = _connection.CreateModel();
 
             var consumer = new EventingBasicConsumer(channel);
