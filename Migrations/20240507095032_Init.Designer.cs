@@ -11,8 +11,8 @@ using POSIndexer.Migrations;
 namespace POSIndexer.Migrations
 {
     [DbContext(typeof(InventoryReadDB))]
-    [Migration("20240502121401_FixedPartTableName")]
-    partial class FixedPartTableName
+    [Migration("20240507095032_Init")]
+    partial class Init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -26,7 +26,8 @@ namespace POSIndexer.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("char(36)");
+                        .HasColumnType("char(36)")
+                        .HasColumnName("Car_Id");
 
                     b.Property<string>("Color")
                         .IsRequired()
@@ -51,17 +52,19 @@ namespace POSIndexer.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Cars");
+                    b.ToTable("Car");
                 });
 
             modelBuilder.Entity("POSIndexer.Models.Part", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("char(36)");
+                        .HasColumnType("char(36)")
+                        .HasColumnName("Part_Id");
 
                     b.Property<Guid>("CarId")
-                        .HasColumnType("char(36)");
+                        .HasColumnType("char(36)")
+                        .HasColumnName("Car_Id");
 
                     b.Property<DateTime?>("CreatedDate")
                         .HasColumnType("datetime(6)");
@@ -80,16 +83,18 @@ namespace POSIndexer.Migrations
 
                     b.HasIndex("CarId");
 
-                    b.ToTable("Parts");
+                    b.ToTable("Part");
                 });
 
             modelBuilder.Entity("POSIndexer.Models.Part", b =>
                 {
-                    b.HasOne("POSIndexer.Models.Car", null)
+                    b.HasOne("POSIndexer.Models.Car", "Car")
                         .WithMany("Parts")
                         .HasForeignKey("CarId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Car");
                 });
 
             modelBuilder.Entity("POSIndexer.Models.Car", b =>

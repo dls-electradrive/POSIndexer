@@ -23,7 +23,8 @@ namespace POSIndexer.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("char(36)");
+                        .HasColumnType("char(36)")
+                        .HasColumnName("Car_Id");
 
                     b.Property<string>("Color")
                         .IsRequired()
@@ -55,10 +56,12 @@ namespace POSIndexer.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("char(36)");
+                        .HasColumnType("char(36)")
+                        .HasColumnName("Part_Id");
 
                     b.Property<Guid>("CarId")
-                        .HasColumnType("char(36)");
+                        .HasColumnType("char(36)")
+                        .HasColumnName("Car_Id");
 
                     b.Property<DateTime?>("CreatedDate")
                         .HasColumnType("datetime(6)");
@@ -82,11 +85,13 @@ namespace POSIndexer.Migrations
 
             modelBuilder.Entity("POSIndexer.Models.Part", b =>
                 {
-                    b.HasOne("POSIndexer.Models.Car", null)
+                    b.HasOne("POSIndexer.Models.Car", "Car")
                         .WithMany("Parts")
                         .HasForeignKey("CarId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Car");
                 });
 
             modelBuilder.Entity("POSIndexer.Models.Car", b =>

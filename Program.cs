@@ -8,10 +8,15 @@ using System.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
+IConfiguration configuration = new ConfigurationBuilder()
+               .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+               .Build();
+
 builder.Services.AddDbContext<InventoryReadDB>(options =>
-    options.UseMySQL(Environment.GetEnvironmentVariable("DB_CONNECTION_STRING")));
+    options.UseMySQL(configuration.GetConnectionString("Database")));
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
 var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())
@@ -51,11 +56,11 @@ app.MapGet("/create-testdata", (InventoryReadDB dbcontext) =>
         {
             new Part()
             {
+                Id = Guid.NewGuid(),
                 CarId = guid,
                 CreatedDate = DateTime.Now,
                 Name = "TestPart",
-                Description = "This is a dummy part",
-                Id = Guid.NewGuid()
+                Description = "This is a dummy part"
             }
         }
     };
@@ -67,7 +72,7 @@ app.MapGet("/create-testdata", (InventoryReadDB dbcontext) =>
 app.UseSwagger();
 app.UseSwaggerUI();
 
-var messageHandler = new MQHandler();
+var messageHandler = new MQHandler(builder.Configuration);
 messageHandler.AttachCreateEvent();
 messageHandler.AttachRemoveEvent();
 messageHandler.AttachOrderEvent();

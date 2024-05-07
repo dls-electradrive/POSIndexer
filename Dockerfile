@@ -6,16 +6,6 @@ WORKDIR /app
 EXPOSE 8080
 EXPOSE 8081
 
-
-#variables for db and messagequeue
-ENV DB_CONNECTION_STRING "server=host.docker.internal;port=3307;uid=root;pwd=12345;database=carstorage"
-ENV DB_USER "guest"
-ENV DB_PASS "12345"
-
-ENV MQ_HOSTNAME "host.docker.internal"
-ENV MQ_USER "guest"
-ENV MQ_PASS "guest"
-
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src

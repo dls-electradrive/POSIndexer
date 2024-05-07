@@ -16,12 +16,13 @@ namespace POSIndexer
     {
         private readonly ConnectionFactory _factory;
         private readonly IConnection _connection;
-        public MQHandler()
+        public MQHandler(IConfiguration configuration)
         {
+            var messageQueueConfig = configuration.GetSection("MessageQueue");
             _factory = new ConnectionFactory();
-            _factory.HostName = Environment.GetEnvironmentVariable("MQ_HOSTNAME");
-            _factory.UserName = Environment.GetEnvironmentVariable("MQ_USER");
-            _factory.Password = Environment.GetEnvironmentVariable("MQ_PASS");
+            _factory.HostName = messageQueueConfig["Hostname"];
+            _factory.UserName = messageQueueConfig["Username"];
+            _factory.Password = messageQueueConfig["Password"];
             _connection = _factory.CreateConnection();
         }
         public void AttachCreateEvent()
