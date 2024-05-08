@@ -14,26 +14,28 @@ IConfiguration configuration = new ConfigurationBuilder()
 
 builder.Services.AddDbContext<InventoryReadDB>(options =>
     options.UseMySQL(configuration.GetConnectionString("Database")));
+builder.Services.AddScoped<IPOSRepository, POSRepository>();
+builder.Services.AddTransient<IMQHandler, MQHandler>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-using (var scope = app.Services.CreateScope())
+var scope = app.Services.CreateScope();
+
+var db = scope.ServiceProvider.GetRequiredService<InventoryReadDB>();
+
+
+if (db.Database.GetPendingMigrations().Any())
 {
-    var db = scope.ServiceProvider.GetRequiredService<InventoryReadDB>();
-
-
-    if (db.Database.GetPendingMigrations().Any())
-    {
-        Console.WriteLine($"Found {db.Database.GetPendingMigrations().Count()} migrations");
-        db.Database.Migrate();
-    }
-    else
-    {
-        Console.WriteLine("No migraitions to migrate");
-    }
+    Console.WriteLine($"Found {db.Database.GetPendingMigrations().Count()} migrations");
+    db.Database.Migrate();
 }
+else
+{
+    Console.WriteLine("No migraitions to migrate");
+}
+
 app.MapGet("/clean-testdata", (InventoryReadDB dbcontext) =>
 {
     var testcars = dbcontext.Cars.Where(x => x.Name.StartsWith("test-car")).ToList();
@@ -72,8 +74,6 @@ app.MapGet("/create-testdata", (InventoryReadDB dbcontext) =>
 app.UseSwagger();
 app.UseSwaggerUI();
 
-var messageHandler = new MQHandler(builder.Configuration);
-messageHandler.AttachNewStandardCarEvent();
-messageHandler.AttachNewCarEvent();
-messageHandler.AttachNewCustomCarEvent();
+var messageHandler = scope.ServiceProvider.GetService<IMQHandler>();
+messageHandler.AttachCarEvent();
 app.Run();

@@ -8,7 +8,7 @@ namespace POSIndexer.Migrations
     public class InventoryReadDB : DbContext
     {
         public InventoryReadDB() { }
-        public InventoryReadDB(DbContextOptions options) : base(options) { }
+        public InventoryReadDB(DbContextOptions<InventoryReadDB> options) : base(options) { }
 
         public DbSet<Car> Cars { get; set; }
         public DbSet<Part> Parts { get; set; }

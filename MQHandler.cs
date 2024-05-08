@@ -12,50 +12,56 @@ using System.Threading.Tasks;
 
 namespace POSIndexer
 {
-    public class MQHandler
+    public class MQHandler : IMQHandler
     {
         private readonly ConnectionFactory _factory;
         private readonly IConnection _connection;
-        public MQHandler(IConfiguration configuration)
+        private readonly IPOSRepository _posRepo;
+        private readonly IConfiguration _configuration;
+        public MQHandler(IConfiguration configuration, IPOSRepository posRepo)
         {
-            var messageQueueConfig = configuration.GetSection("MessageQueue");
+            _configuration = configuration;
+            var messageQueueConfig = _configuration.GetSection("MessageQueue");
             _factory = new ConnectionFactory();
             _factory.HostName = messageQueueConfig["Hostname"];
             _factory.UserName = messageQueueConfig["Username"];
             _factory.Password = messageQueueConfig["Password"];
             _connection = _factory.CreateConnection();
+            _posRepo = posRepo;
         }
-        public void AttachNewCustomCarEvent()
+        public void AttachCarEvent()
         {
-            var repo = new POSRepository();
-            AttachQueueEvent("newCustomCar-indexer-queue", "newCar-exchange", repo.AddCar, "custom");
+            AttachQueueEvent("newStandardCar-indexer-queue", "newCar-exchange");
         }
-        public void AttachNewStandardCarEvent()
-        {
-            var repo = new POSRepository();
-            AttachQueueEvent("newStandardCar-indexer-queue", "newCar-exchange", repo.UpdateCar, "standard");
-        }
-        public void AttachNewCarEvent()
-        {
-            var repo = new POSRepository();
-            AttachQueueEvent("newStandardCar-indexer-queue", "newCar-exchange", repo.AddCar, "created");
-        }
-        private void AttachQueueEvent(string queueName, string exchangeName, Action<Car> function, string routingKey)
+
+        private void AttachQueueEvent(string queueName, string exchangeName)
         {
             var channel = _connection.CreateModel();
             channel.ExchangeDeclare(exchangeName, ExchangeType.Fanout);
             channel.QueueDeclare(queueName);
-            channel.QueueBind(queueName, exchangeName, routingKey);
+            channel.QueueBind(queueName, exchangeName,"");
             channel = _connection.CreateModel();
 
             var consumer = new EventingBasicConsumer(channel);
             consumer.Received += (model, ea) =>
             {
+                var route = ea.RoutingKey;
                 var body = ea.Body.ToArray();
                 var message = Encoding.UTF8.GetString(body);
                 var dto = JsonConvert.DeserializeObject<Car>(message);
                 Console.WriteLine("Got event");
-                function(dto);
+                switch (route)
+                {
+                    case "standard":
+                        _posRepo.UpdateCar(dto);
+                        break;
+                    case "custom":
+                    case "created":
+                        _posRepo.AddCar(dto); 
+                        break;
+                    default:
+                        break;
+                }
             };
             channel.BasicConsume(queueName, true, consumer);
 
