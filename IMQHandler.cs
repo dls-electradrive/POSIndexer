@@ -2,6 +2,6 @@
 {
     public interface IMQHandler
     {
-        void AttachCarEvent();
+        void AttachQueueEvent();
     }
 }

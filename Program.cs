@@ -75,5 +75,5 @@ app.UseSwagger();
 app.UseSwaggerUI();
 
 var messageHandler = scope.ServiceProvider.GetService<IMQHandler>();
-messageHandler.AttachCarEvent();
+messageHandler.AttachQueueEvent();
 app.Run();

@@ -29,17 +29,15 @@ namespace POSIndexer
             _connection = _factory.CreateConnection();
             _posRepo = posRepo;
         }
-        public void AttachCarEvent()
-        {
-            AttachQueueEvent("newStandardCar-indexer-queue", "newCar-exchange");
-        }
 
-        private void AttachQueueEvent(string queueName, string exchangeName)
+        public void AttachQueueEvent()
         {
+            var queueName = "newStandardCar-indexer-queue";
+            var exchangeName = "newCar-exchange";
             var channel = _connection.CreateModel();
             channel.ExchangeDeclare(exchangeName, ExchangeType.Fanout);
             channel.QueueDeclare(queueName);
-            channel.QueueBind(queueName, exchangeName,"");
+            channel.QueueBind(queueName, exchangeName, "test");
             channel = _connection.CreateModel();
 
             var consumer = new EventingBasicConsumer(channel);
@@ -49,7 +47,11 @@ namespace POSIndexer
                 var body = ea.Body.ToArray();
                 var message = Encoding.UTF8.GetString(body);
                 var dto = JsonConvert.DeserializeObject<Car>(message);
+                Console.WriteLine("--------------------------");
                 Console.WriteLine("Got event");
+                Console.WriteLine($"Route: {route}");
+                Console.WriteLine("Object:");
+                Console.WriteLine(message);
                 switch (route)
                 {
                     case "standard":
@@ -57,7 +59,7 @@ namespace POSIndexer
                         break;
                     case "custom":
                     case "created":
-                        _posRepo.AddCar(dto); 
+                        _posRepo.AddCar(dto);
                         break;
                     default:
                         break;
